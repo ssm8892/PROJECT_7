@@ -1,0 +1,45 @@
+.user-photos {
+    padding: 16px;
+  }
+  
+  .photo-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+  }
+  
+  .photo-item img {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  
+  .photo-item .MuiTypography-body2 {
+    color: #555;
+  }
+  
+  .photo-item .comment-item {
+    margin-top: 8px;
+    padding-left: 8px;
+    border-left: 2px solid #e0e4ea;
+  }
+  
+  .photo-item .comment-item a {
+    color: #3f51b5;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .photo-item .comment-item a:hover {
+    text-decoration: underline;
+  }
+  
+  .photo-item .comment-item .MuiTypography-caption {
+    color: #888;
+    font-size: 0.85em;
+  }
+  

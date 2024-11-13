@@ -1,0 +1,45 @@
+.topbar-appBar{
+  height: 60;
+  justify-content: "center";
+}
+
+.topbar-appBar {
+  background-color: #2e3b55;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.topbar-appBar .MuiToolbar-root {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.topbar-appBar .MuiTypography-h5 {
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.topbar-appBar .MuiTypography-h6 {
+  color: #ffffff;
+}
+
+.topbar-appBar .MuiFormControlLabel-root {
+  color: #1976d2; 
+  background-color: white; 
+  padding: 4px 8px; 
+  border-radius: 4px; 
+}
+
+.topbar-appBar .MuiFormControlLabel-label {
+  color: #1976d2; 
+  font-weight: 500;
+}
+
+.topbar-appBar .MuiCheckbox-root {
+  color: #1976d2 !important; 
+}
+
+.topbar-appBar .MuiCheckbox-root.Mui-checked {
+  color: #1976d2 !important;
+}
