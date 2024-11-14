@@ -174,7 +174,7 @@ app.get("/user/:id", async function (request, response) {
   }
 
   try {
-    const user = await User.findById(new mongoose.Types.ObjectId(id)).select('-__v');
+    const user = await User.findById(new mongoose.Types.ObjectId(id)).select('-__v -login_name -password');
     if (!user) {
       console.log("User with _id:" + id + " not found.");
       return response.status(404).send("Not found");
@@ -188,7 +188,7 @@ app.get("/user/:id", async function (request, response) {
 
 app.post("/user", async function (request, response) {
     const loginDetails = request.body;
-    const loginName = loginDetails.loginName;
+    const loginName = loginDetails.login_name;
     const passA = loginDetails.passwordA;
     const passB = loginDetails.passwordB;
     const name = loginDetails.name ?? "";
@@ -227,7 +227,7 @@ app.post("/user", async function (request, response) {
         newUser.save();
 
         request.session.user = newUser;
-        return response.status(200).send({ _id: newUser._id, first_name: newUser.first_name });
+        return response.status(200).send({ _id: newUser._id, first_name: newUser.first_name, login_name: newUser.login_name });
     } catch (err) {
         return response.status(400).json({ message: "Database error with adding user." });
     }
@@ -263,7 +263,7 @@ app.get("/photosOfUser/:id", async function (request, response) {
 
             const commentObject = comment.toObject({ versionKey: false });
             delete commentObject.user_id;
-
+            
             return {
               ...commentObject,
               user: user ? user.toObject({ versionKey: false }) : null

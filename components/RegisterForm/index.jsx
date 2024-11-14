@@ -20,7 +20,7 @@ function RegisterForm({ onLogin }) {
         setError(null);
         try {
             onLogin({
-                loginName: loginName,
+                login_name: loginName,
                 passwordA: passwordA,
                 passwordB: passwordB,
                 name: name,
