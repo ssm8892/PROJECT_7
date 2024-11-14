@@ -186,7 +186,52 @@ app.get("/user/:id", async function (request, response) {
   }
 });
 
+app.post("/user", async function (request, response) {
+    const loginDetails = request.body;
+    const loginName = loginDetails.loginName;
+    const passA = loginDetails.passwordA;
+    const passB = loginDetails.passwordB;
+    const name = loginDetails.name ?? "";
+    const location = loginDetails.location ?? "";
+    const description = loginDetails.description ?? "";
+    const occupation = loginDetails.occupation ?? "";
 
+    let firstName = "";
+    let lastName = "";
+    if (name !== "") {
+        firstName = name.split(" ")[0];
+        lastName = name.split(" ")[1] ?? "";
+    }
+
+    if (loginName === "") 
+        return response.status(400).json({ message: "No login name provided." });
+    const loginNameAlreadyExists = await User.findOne({ login_name: loginName });
+    if (loginNameAlreadyExists)
+        return response.status(400).json({ message: "A user already exists with this login name." });
+    if (passA === "" || passB === "" ) 
+        return response.status(400).json({ message: "Passwords not provided." });
+    if (passA !== passB)
+        return response.status(400).json({ message: "Passwords do not match." });
+    try {
+        const newUser = await User.create({
+            first_name: firstName,
+            last_name: lastName,
+            location: location,
+            description: description,
+            occupation: occupation,
+            login_name: loginName,
+            password: passA
+        });
+        if (!newUser)
+            return response.status(400).json({ message: "Database error with adding user." });
+        newUser.save();
+
+        request.session.user = newUser;
+        return response.status(200).send({ _id: newUser._id, first_name: newUser.first_name });
+    } catch (err) {
+        return response.status(400).json({ message: "Database error with adding user." });
+    }
+});
 
 /**
  * URL /photosOfUser/:id - Returns the Photos for User (id).
@@ -347,14 +392,15 @@ app.get("/photo/:photoId", async function (request, response) {
 
 app.post('/admin/login', async (request, response) => {
   const loginName = request.body.login_name;
-  const user = await User.findOne({ login_name: loginName });
+  const password = request.body.password;
+  const user = await User.findOne({ login_name: loginName, password: password });
   console.log("User: ", user);
   if (!user) {
     return response.status(400).send('Login failed');
   }
 
   request.session.user = user;
-  response.send({ _id: user._id, first_name: user.first_name });
+  response.status(200).send({ _id: user._id, first_name: user.first_name });
 });
 
 app.post('/admin/logout', (request, response) => {
@@ -362,7 +408,7 @@ app.post('/admin/logout', (request, response) => {
     return response.status(400).send('Not logged in');
   }
   request.session.destroy();
-  response.sendStatus(200);
+  response.status(200).sendStatus(200);
 });
 
 app.post('/admin/currentUser', (request, response) => {

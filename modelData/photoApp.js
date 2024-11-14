@@ -63,6 +63,7 @@
     description: "Should've stayed in the car.",
     occupation: "Mathematician",
     login_name: "malcom_Ian",
+    password: "wellthereitis"
   };
   const er = {
     _id: "57231f1a30e4351f4e9f4bd8",
@@ -72,6 +73,7 @@
     description: "Lvl 6 rating. Pilot.",
     occupation: "Warrant Officer",
     login_name: "ripley_Ellen",
+    password: "gameOverMan"
   };
   const pt = {
     _id: "57231f1a30e4351f4e9f4bd9",
@@ -85,6 +87,7 @@
       "all shall fade... all... shall... fade... ",
     occupation: "Thain",
     login_name: "took_Peregrin",
+    password: "password1234"
   };
   const rk = {
     _id: "57231f1a30e4351f4e9f4bda",
@@ -93,7 +96,8 @@
     location: "D'Qar",
     description: "Excited to be here!",
     occupation: "Rebel",
-    login_name: "kenobi_Rey"
+    login_name: "kenobi_Rey",
+    password: "TheLastJedi"
   };
   const al = {
     _id: "57231f1a30e4351f4e9f4bdb",
@@ -103,6 +107,7 @@
     description: "Witch",
     occupation: "Animal Control",
     login_name: "ludgate_April",
+    password: "aprilLudgate2024"
   };
   const jo = {
     _id: "57231f1a30e4351f4e9f4bdc",
@@ -112,6 +117,7 @@
     description: "<i>CS6314!</i>",
     occupation: "Professor",
     login_name: "Outerhout_John",
+    password: "HorseRidingALargeCar"
   };
 
   const users = [im, er, pt, rk, al, jo];

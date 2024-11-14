@@ -75,7 +75,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
     <AppBar className="topbar-appBar" position="absolute">
       <Toolbar>
         <Typography variant="h5" color="inherit" style={{ flex: 1 }}>
-          Sai Motukuri
+          Sai Motukuri & Aubrey Feldker
         </Typography>
 
         {loggedInUser && (
@@ -94,7 +94,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
         {!loggedInUser && (
           <>
             <Button variant="contained" component={Link} to={`/loginView`} >Login</Button>
-            <Button variant="contained" component={Link} to={`/RegisterView`} >Login</Button>
+            <Button variant="contained" component={Link} to={`/registerView`} >Login</Button>
           </>
         )}
         <Typography variant="h5" color="inherit" style={{ marginRight: 16 }}>

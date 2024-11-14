@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { Grid, Paper } from "@mui/material";
+import { Redirect } from 'react-router'
 import { HashRouter, Route, Routes, useParams } from "react-router-dom";
 import axios from "axios";
 import "./styles/main.css";
@@ -11,6 +12,8 @@ import UserPhotos from "./components/UserPhotos";
 import UserComments from "./components/UserComments";
 import LoginForm from "./components/LoginForm";
 import UploadPhoto from "./components/UploadPhoto";
+import LoginRedirect from "./components/LoginRedirect";
+import RegisterForm from "./components/RegisterForm";
 
 function UserDetailRoute() {
   const { userId } = useParams();
@@ -27,13 +30,23 @@ function PhotoShare() {
   const [loggedInUser, setLoggedInUser] = useState(null);
 
   
-  const handleLogin = async (loginName) => {
+  const handleLogin = async (loginName, password) => {
     try {
-      const response = await axios.post("/admin/login", { login_name: loginName });
+      const response = await axios.post("/admin/login", { login_name: loginName, password: password });
       setLoggedInUser(response.data);
     } catch (error) {
       console.error("Login failed: ", error);
       alert("Login failed. Please try again.");
+    }
+  }
+
+  const handleRegistration = async (credentials) => {
+    try {
+      const response = await axios.post("/user", credentials);
+      setLoggedInUser(response.data);
+    } catch (error) {
+      console.error("Login failed: ", error);
+      alert(`Login failed. ${error.response.data.message}`);
     }
   }
 
@@ -86,7 +99,20 @@ function PhotoShare() {
                     />
                   </>
                 ) : (
-                  <Route path="/loginView" element={<LoginForm onLogin={handleLogin}/>} />
+                  <>
+                    <Route
+                        path="/"
+                        element={<LoginRedirect />}
+                    />
+                    <Route
+                        path="/loginView"
+                        element={<LoginForm onLogin={handleLogin}/>}
+                    />
+                    <Route
+                        path="/registerView"
+                        element={<RegisterForm onLogin={handleRegistration}/>}
+                    />
+                  </>
                 )}
               </Routes>
             </Paper>
