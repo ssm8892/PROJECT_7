@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Divider } from "@mui/material";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import "./styles.css";
 
 function RegisterForm({ onLogin }) {

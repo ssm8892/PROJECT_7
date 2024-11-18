@@ -149,7 +149,7 @@ app.get("/test/:p1", async function (request, response) {
 app.get("/user/list", async function (request, response) {
   if (!request.session.user) {
     return response.status(401).send('Unauthorized Access');
-  } 
+  }
   try {
     const users = await User.find({}, '_id first_name last_name');
     return response.status(200).json(users);
@@ -167,7 +167,7 @@ app.get("/user/:id", async function (request, response) {
   const id = request.params.id;
   if (!request.session.user) {
     return response.status(401).send('Unauthorized Access');
-  } 
+  }
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return response.status(400).json({ message: "Invalid user ID format" });
@@ -187,50 +187,55 @@ app.get("/user/:id", async function (request, response) {
 });
 
 app.post("/user", async function (request, response) {
-    const loginDetails = request.body;
-    const loginName = loginDetails.login_name;
-    const passA = loginDetails.passwordA;
-    const passB = loginDetails.passwordB;
-    const name = loginDetails.name ?? "";
-    const location = loginDetails.location ?? "";
-    const description = loginDetails.description ?? "";
-    const occupation = loginDetails.occupation ?? "";
+  const loginDetails = request.body;
+  const loginName = loginDetails.login_name;
+  const passA = loginDetails.passwordA;
+  const passB = loginDetails.passwordB;
+  const name = loginDetails.name ?? "";
+  const location = loginDetails.location ?? "";
+  const description = loginDetails.description ?? "";
+  const occupation = loginDetails.occupation ?? "";
 
-    let firstName = "";
-    let lastName = "";
-    if (name !== "") {
-        firstName = name.split(" ")[0];
-        lastName = name.split(" ")[1] ?? "";
+  let firstName = "";
+  let lastName = "";
+  if (name !== "") {
+    firstName = name.split(" ")[0];
+    lastName = name.split(" ")[1] ?? "";
+  }
+
+  if (loginName === "") {
+    return response.status(400).json({ message: "No login name provided." });
+  }
+  const loginNameAlreadyExists = await User.findOne({ login_name: loginName });
+  if (loginNameAlreadyExists) {
+    return response.status(400).json({ message: "A user already exists with this login name." });
+  }
+  if (passA === "" || passB === "") {
+    return response.status(400).json({ message: "Passwords not provided." });
+  }
+  if (passA !== passB) {
+    return response.status(400).json({ message: "Passwords do not match." });
+  }
+  try {
+    const newUser = await User.create({
+      first_name: firstName,
+      last_name: lastName,
+      location: location,
+      description: description,
+      occupation: occupation,
+      login_name: loginName,
+      password: passA
+    });
+    if (!newUser) {
+      return response.status(400).json({ message: "Database error with adding user." });
     }
+    newUser.save();
 
-    if (loginName === "") 
-        return response.status(400).json({ message: "No login name provided." });
-    const loginNameAlreadyExists = await User.findOne({ login_name: loginName });
-    if (loginNameAlreadyExists)
-        return response.status(400).json({ message: "A user already exists with this login name." });
-    if (passA === "" || passB === "" ) 
-        return response.status(400).json({ message: "Passwords not provided." });
-    if (passA !== passB)
-        return response.status(400).json({ message: "Passwords do not match." });
-    try {
-        const newUser = await User.create({
-            first_name: firstName,
-            last_name: lastName,
-            location: location,
-            description: description,
-            occupation: occupation,
-            login_name: loginName,
-            password: passA
-        });
-        if (!newUser)
-            return response.status(400).json({ message: "Database error with adding user." });
-        newUser.save();
-
-        request.session.user = newUser;
-        return response.status(200).send({ _id: newUser._id, first_name: newUser.first_name, login_name: newUser.login_name });
-    } catch (err) {
-        return response.status(400).json({ message: "Database error with adding user." });
-    }
+    request.session.user = newUser;
+    return response.status(200).send({ _id: newUser._id, first_name: newUser.first_name, login_name: newUser.login_name });
+  } catch (err) {
+    return response.status(400).json({ message: "Database error with adding user." });
+  }
 });
 
 /**
@@ -240,7 +245,7 @@ app.get("/photosOfUser/:id", async function (request, response) {
   const userId = request.params.id;
   if (!request.session.user) {
     return response.status(401).send('Unauthorized Access');
-  } 
+  }
 
   // Check if userId is a valid ObjectId
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -263,7 +268,7 @@ app.get("/photosOfUser/:id", async function (request, response) {
 
             const commentObject = comment.toObject({ versionKey: false });
             delete commentObject.user_id;
-            
+
             return {
               ...commentObject,
               user: user ? user.toObject({ versionKey: false }) : null
@@ -296,7 +301,7 @@ app.get("/photosOfUser/:id", async function (request, response) {
 app.get("/user/counts/:userId", async function (request, response) {
   if (!request.session.user) {
     return response.status(401).send('Unauthorized Access');
-  } 
+  }
   const userId = request.params.userId;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -329,7 +334,7 @@ app.get("/commentsOfUser/:userId", async function (request, response) {
   const userId = request.params.userId;
   if (!request.session.user) {
     return response.status(401).send('Unauthorized Access');
-  } 
+  }
 
   try {
 
@@ -373,7 +378,7 @@ app.get("/photo/:photoId", async function (request, response) {
   const photoId = request.params.photoId;
   if (!request.session.user) {
     return response.status(401).send('Unauthorized Access');
-  } 
+  }
 
   try {
     // Find the photo by its ID and return the user_id (owner)
@@ -393,6 +398,8 @@ app.get("/photo/:photoId", async function (request, response) {
 app.post('/admin/login', async (request, response) => {
   const loginName = request.body.login_name;
   const password = request.body.password;
+  console.log("LOGIN_NAME: " + loginName);
+  console.log("PASSWORD: ", password);
   const user = await User.findOne({ login_name: loginName, password: password });
   console.log("User: ", user);
   if (!user) {
@@ -400,7 +407,7 @@ app.post('/admin/login', async (request, response) => {
   }
 
   request.session.user = user;
-  response.status(200).send({ _id: user._id, first_name: user.first_name });
+  return response.status(200).send({ _id: user._id, first_name: user.first_name });
 });
 
 app.post('/admin/logout', (request, response) => {
@@ -408,19 +415,19 @@ app.post('/admin/logout', (request, response) => {
     return response.status(400).send('Not logged in');
   }
   request.session.destroy();
-  response.status(200).sendStatus(200);
+  return response.status(200).sendStatus(200);
 });
 
 app.post('/admin/currentUser', (request, response) => {
   if (!request.session.user) {
     return response.status(400).send('Not logged in');
-  } 
+  }
   if (!request.session.user) {
     return response.status(400).send('Not logged in');
   }
   const user = request.session.user;
-  response.send({ _id: user._id, first_name: user.first_name });
-})
+  return response.status(200).send({ _id: user._id, first_name: user.first_name });
+});
 
 app.post("/commentsOfPhoto/:photo_id", async (request, response) => {
   const { photo_id } = request.params;
@@ -480,10 +487,10 @@ app.post("/photos/new", upload.single("uploadedphoto"), async (req, res) => {
 
     // Save the photo metadata in MongoDB
     await newPhoto.save();
-    res.status(200).json(newPhoto); // Return the saved photo document as the response
+    return res.status(200).json(newPhoto); // Return the saved photo document as the response
   } catch (error) {
     console.error("Error uploading photo:", error);
-    res.status(500).send("Error uploading photo");
+    return res.status(500).send("Error uploading photo");
   }
 });
 

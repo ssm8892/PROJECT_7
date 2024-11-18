@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { Grid, Paper } from "@mui/material";
-import { Redirect } from 'react-router'
 import { HashRouter, Route, Routes, useParams } from "react-router-dom";
 import axios from "axios";
 import "./styles/main.css";
@@ -38,7 +37,7 @@ function PhotoShare() {
       console.error("Login failed: ", error);
       alert("Login failed. Please try again.");
     }
-  }
+  };
 
   const handleRegistration = async (credentials) => {
     try {
@@ -48,7 +47,7 @@ function PhotoShare() {
       console.error("Login failed: ", error);
       alert(`Login failed. ${error.response.data.message}`);
     }
-  }
+  };
 
   const handleLogout = async () => {
     try {
@@ -57,7 +56,7 @@ function PhotoShare() {
     } catch (error) {
       console.error("Logout failed: ", error);
     }
-  }
+  };
 
   return (
     <HashRouter>

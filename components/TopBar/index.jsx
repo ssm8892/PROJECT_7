@@ -52,7 +52,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
             setContextText(`Welcome ${first_name}`);
           }
         }
-      })
+      });
   });
 
   useEffect(() => {
@@ -69,7 +69,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
   const handleLogOut = () => {
     onLogout();
     navigate("/");
-  }
+  };
 
   return (
     <AppBar className="topbar-appBar" position="absolute">
@@ -94,7 +94,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
         {!loggedInUser && (
           <>
             <Button variant="contained" component={Link} to={`/loginView`} >Login</Button>
-            <Button variant="contained" component={Link} to={`/registerView`} >Login</Button>
+            <Button variant="contained" component={Link} to={`/registerView`} >Register</Button>
           </>
         )}
         <Typography variant="h5" color="inherit" style={{ marginRight: 16 }}>

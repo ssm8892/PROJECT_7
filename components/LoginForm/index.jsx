@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import "./styles.css";
 
 function LoginForm({ onLogin }) {
@@ -45,7 +44,7 @@ function LoginForm({ onLogin }) {
                 </form>
             </div>
             <div className="account-link">
-                <Link to="/registerView">I don't have an account</Link>
+                <Link to="/registerView">I don&apos;t have an account</Link>
             </div>
         </>
     );

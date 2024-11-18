@@ -86,8 +86,8 @@
       "until the stars are all alight... Mist and shadow, cloud and shade, " +
       "all shall fade... all... shall... fade... ",
     occupation: "Thain",
-    login_name: "took_Peregrin",
-    password: "password1234"
+    login_name: "took",
+    password: "weak"
   };
   const rk = {
     _id: "57231f1a30e4351f4e9f4bda",
