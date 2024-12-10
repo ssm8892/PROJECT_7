@@ -89,6 +89,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
             />
             <Button variant="contained" onClick={handleLogOut}>Logout</Button>
             <Button variant="contained" component={Link} to={`/uploadView`} >UPLOAD NEW PHOTO</Button>
+            <Button variant="contained" component={Link} to={`/activityView`} >Activities</Button>
           </>
         )}
         {!loggedInUser && (

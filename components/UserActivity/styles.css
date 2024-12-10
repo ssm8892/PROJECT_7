@@ -1,0 +1,35 @@
+.user-list {
+    background-color: #f4f6f8;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-list .MuiList-root {
+    padding: 0;
+  }
+  
+  .user-list .MuiListItem-root {
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .user-list .MuiListItem-root:hover {
+    background-color: #e0e4ea;
+  }
+  
+  .user-list .MuiListItemText-primary {
+    color: #2e3b55;
+    font-weight: 500;
+  }
+  
+  .count-badge {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  
+  .clickable {
+    cursor: pointer;
+  }
+  
