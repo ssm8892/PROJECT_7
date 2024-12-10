@@ -232,29 +232,6 @@ app.post("/user", async function (request, response) {
     }
     newUser.save();
 
-    if (loginName === "") 
-        return response.status(400).json({ message: "No login name provided." });
-    const loginNameAlreadyExists = await User.findOne({ login_name: loginName });
-    if (loginNameAlreadyExists)
-        return response.status(400).json({ message: "A user already exists with this login name." });
-    if (passA === "" || passB === "" ) 
-        return response.status(400).json({ message: "Passwords not provided." });
-    if (passA !== passB)
-        return response.status(400).json({ message: "Passwords do not match." });
-    try {
-        const newUser = await User.create({
-            first_name: firstName,
-            last_name: lastName,
-            location: location,
-            description: description,
-            occupation: occupation,
-            login_name: loginName,
-            password: passA
-        });
-        if (!newUser)
-            return response.status(400).json({ message: "Database error with adding user." });
-        newUser.save();
-
         request.session.user = newUser;
 
         const newActivity = await Activity.create({
@@ -263,8 +240,8 @@ app.post("/user", async function (request, response) {
             user_id: newUser._id
         });
         newActivity.save();
-
         return response.status(200).send({ _id: newUser._id, first_name: newUser.first_name, login_name: newUser.login_name });
+    
     } catch (err) {
         console.log(err);
         return response.status(400).json({ message: "Database error with adding user." });
