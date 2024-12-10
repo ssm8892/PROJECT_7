@@ -14,6 +14,7 @@ import LoginForm from "./components/LoginForm";
 import UploadPhoto from "./components/UploadPhoto";
 import LoginRedirect from "./components/LoginRedirect";
 import RegisterForm from "./components/RegisterForm";
+import UserActivity from "./components/UserActivity";
 
 function UserDetailRoute() {
   const { userId } = useParams();
@@ -96,6 +97,10 @@ function PhotoShare() {
                     <Route 
                       path="/uploadView"
                       element={<UploadPhoto />}
+                    />
+                    <Route 
+                      path="/activityView"
+                      element={<UserActivity />}
                     />
                   </>
                 ) : (

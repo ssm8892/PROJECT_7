@@ -89,12 +89,13 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
             />
             <Button variant="contained" onClick={handleLogOut}>Logout</Button>
             <Button variant="contained" component={Link} to={`/uploadView`} >UPLOAD NEW PHOTO</Button>
+            <Button variant="contained" component={Link} to={`/activityView`} >Activities</Button>
           </>
         )}
         {!loggedInUser && (
           <>
             <Button variant="contained" component={Link} to={`/loginView`} >Login</Button>
-            <Button variant="contained" component={Link} to={`/registerView`} >Login</Button>
+            <Button variant="contained" component={Link} to={`/registerView`} >Register</Button>
           </>
         )}
         <Typography variant="h5" color="inherit" style={{ marginRight: 16 }}>

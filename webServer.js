@@ -51,6 +51,7 @@ const app = express();
 const User = require("./schema/user.js");
 const Photo = require("./schema/photo.js");
 const SchemaInfo = require("./schema/schemaInfo.js");
+const Activity = require("./schema/activity.js");
 
 // XXX - Your submission should work without this line. Comment out or delete
 // this line for tests and before submission!
@@ -227,8 +228,17 @@ app.post("/user", async function (request, response) {
         newUser.save();
 
         request.session.user = newUser;
+
+        const newActivity = await Activity.create({
+            type: "userRegister",
+            date: Date.now(),
+            user_id: newUser._id
+        });
+        newActivity.save();
+
         return response.status(200).send({ _id: newUser._id, first_name: newUser.first_name, login_name: newUser.login_name });
     } catch (err) {
+        console.log(err);
         return response.status(400).json({ message: "Database error with adding user." });
     }
 });
@@ -284,11 +294,6 @@ app.get("/photosOfUser/:id", async function (request, response) {
     return response.status(400).json({ message: "Error fetching photos" });
   }
 });
-
-
-
-
-
 
 /**
  * URL /user/counts/:userId - Returns the count of photos and comments for a specific user.
@@ -365,9 +370,8 @@ app.get("/commentsOfUser/:userId", async function (request, response) {
   }
 });
 
-
 /**
- * URL /photo/:photoId - Returns the owner of the specific photo
+ * URL /photo/:photoId - Returns the owner and location of the specific photo
  */
 app.get("/photo/:photoId", async function (request, response) {
   const photoId = request.params.photoId;
@@ -377,7 +381,7 @@ app.get("/photo/:photoId", async function (request, response) {
 
   try {
     // Find the photo by its ID and return the user_id (owner)
-    const photo = await Photo.findById(photoId).select("user_id");
+    const photo = await Photo.findById(photoId).select("user_id file_name");
     if (!photo) {
       return response.status(404).json({ message: "Photo not found" });
     }
@@ -399,14 +403,27 @@ app.post('/admin/login', async (request, response) => {
     return response.status(400).send('Login failed');
   }
 
+  const newActivity = await Activity.create({
+    type: "userLogin",
+    date: Date.now(),
+    user_id: user._id
+  });
+  newActivity.save();
+
   request.session.user = user;
   response.status(200).send({ _id: user._id, first_name: user.first_name });
 });
 
-app.post('/admin/logout', (request, response) => {
+app.post('/admin/logout', async (request, response) => {
   if (!request.session.user) {
     return response.status(400).send('Not logged in');
   }
+  const newActivity = await Activity.create({
+    type: "userLogout",
+    date: Date.now(),
+    user_id: request.session.user._id
+  });
+  newActivity.save();
   request.session.destroy();
   response.status(200).sendStatus(200);
 });
@@ -444,6 +461,15 @@ app.post("/commentsOfPhoto/:photo_id", async (request, response) => {
     await photo.save();
 
     console.log("Comment Added");
+
+    const newActivity = await Activity.create({
+        type: "commentUpload",
+        date: Date.now(),
+        user_id: request.session.user._id,
+        photo_id: photo._id
+    });
+    newActivity.save();
+
     return response.status(200).send("Comment added");
   } catch (err) {
     console.error("Error adding comment:", err);
@@ -480,6 +506,15 @@ app.post("/photos/new", upload.single("uploadedphoto"), async (req, res) => {
 
     // Save the photo metadata in MongoDB
     await newPhoto.save();
+
+    const newActivity = await Activity.create({
+        type: "photoUpload",
+        date: Date.now(),
+        user_id: req.session.user._id,
+        photo_id: newPhoto._id,
+    });
+    newActivity.save();
+
     res.status(200).json(newPhoto); // Return the saved photo document as the response
   } catch (error) {
     console.error("Error uploading photo:", error);
@@ -487,8 +522,15 @@ app.post("/photos/new", upload.single("uploadedphoto"), async (req, res) => {
   }
 });
 
-
-
+app.get("/activity", async (req, res) => {
+    try {
+        const recentActivities = await Activity.find({}).sort('-date').limit(5);
+        return res.status(200).json(recentActivities);
+    } catch (err) {
+        console.error(`Error fetching activity feed: ${err}`);
+        res.status(500).send("Error obtaining activity feed");
+    }
+});
 
 const server = app.listen(3000, function () {
   const port = server.address().port;
