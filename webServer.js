@@ -153,6 +153,8 @@ app.get("/user/list", async function (request, response) {
   }
   try {
     const users = await User.find({}, '_id first_name last_name');
+    const selfIndex = users.findIndex((el) => el._id.toString() === request.session.user._id);
+    users[selfIndex].set('is_user', true, {strict: false});
     return response.status(200).json(users);
   } catch (err) {
     console.error("Error fetching user list:", err);
@@ -522,7 +524,7 @@ app.post("/photos/new", upload.single("uploadedphoto"), async (req, res) => {
     });
     newActivity.save();
 
-    res.status(200).json(newPhoto); // Return the saved photo document as the response
+    return res.status(200).json(newPhoto); // Return the saved photo document as the response
   } catch (error) {
     console.error("Error uploading photo:", error);
     return res.status(500).send("Error uploading photo");
@@ -535,7 +537,30 @@ app.get("/activity", async (req, res) => {
         return res.status(200).json(recentActivities);
     } catch (err) {
         console.error(`Error fetching activity feed: ${err}`);
-        res.status(500).send("Error obtaining activity feed");
+        return res.status(500).send("Error obtaining activity feed");
+    }
+});
+
+app.get("/user/list/activity", async (req, res) => {
+    try {
+        const recentActivities = await Activity.aggregate(
+            [
+                { $group: {
+                    _id: '$user_id',
+                    latest_activity: {
+                        $topN: {
+                            output: ["$type", "$photo_id"],
+                            sortBy: {date: -1},
+                            n: 1,
+                        }
+                    }
+                }}
+            ]
+        );
+        return res.status(200).json(recentActivities);
+    } catch (err) {
+        console.error(`Error fetching activity feed: ${err}`);
+        return res.status(500).send("Error obtaining activity feed");
     }
 });
 

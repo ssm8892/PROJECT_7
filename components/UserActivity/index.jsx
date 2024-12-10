@@ -8,6 +8,29 @@ function UserActivity() {
   const [activityList, setActivityList] = useState([]);
   const [delay, setDelay] = useState(100);
 
+  //Function based off of https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+  function useInterval(callback) {
+    const savedCallback = useRef();
+
+    // Remember the latest function.
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    // Set up the interval.
+    useEffect(() => {
+        function tick() {
+            savedCallback.current();
+        }
+        if (delay !== null) {
+            let id = setInterval(tick, delay);
+            
+            return () => {clearInterval(id); };
+        }
+        return 0;
+    }, [delay]);
+  }
+
   useInterval(() => {
     axios.get("/activity").then((response) => {
         console.log(response.data);
@@ -47,60 +70,35 @@ function UserActivity() {
     });
   });
 
-  //Function based off of https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-  function useInterval(callback) {
-    const savedCallback = useRef();
-
-    // Remember the latest function.
-    useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
-
-    // Set up the interval.
-    useEffect(() => {
-        function tick() {
-            savedCallback.current();
-        }
-        if (delay !== null) {
-            let id = setInterval(tick, delay);
-            
-            return () => {clearInterval(id); }
-        }
-    }, [delay]);
-  }
-
   return (
-    <>
-      <List component="nav">
-        {activityList.map((item) => {
-          console.log(item);
-          const activityDate = new Date(item.date);
-          return (
-            <React.Fragment key={item._id}>
-              {item.photo ? (
-                <>
-                  <ListItem component={Link} to={`/photos/${item.photo.user_id}/${item.photo._id}`} button>
-                    <ListItemAvatar>
-                      <Avatar src={`images/${item.photo.file_name}`} />
-                    </ListItemAvatar>
-                    <ListItemText primary={`${activityDate.toLocaleString('en-US')} | ${item.user.first_name} ${item.user.last_name} ${item.string}`} />
-                  </ListItem>
-                  <Divider />
-                </>
-              ) : (
-                <>
-                  <ListItem>
-                    <ListItemText primary={`${activityDate.toLocaleString('en-US')} | ${item.user.first_name} ${item.user.last_name} ${item.string}`} />
-                  </ListItem>
-                  <Divider />
-                </>
-              )
-              }
-            </React.Fragment>
-          );
-        })}
-      </List>
-    </>
+    <List component="nav">
+    {activityList.map((item) => {
+        console.log(item);
+        const activityDate = new Date(item.date);
+        return (
+        <React.Fragment key={item._id}>
+            {item.photo ? (
+            <>
+                <ListItem component={Link} to={`/photos/${item.photo.user_id}/${item.photo._id}`} button>
+                <ListItemAvatar>
+                    <Avatar src={`images/${item.photo.file_name}`} variant="square" />
+                </ListItemAvatar>
+                <ListItemText primary={`${activityDate.toLocaleString('en-US')} | ${item.user.first_name} ${item.user.last_name} ${item.string}`} />
+                </ListItem>
+                <Divider />
+            </>
+            ) : (
+            <>
+                <ListItem>
+                <ListItemText inset primary={`${activityDate.toLocaleString('en-US')} | ${item.user.first_name} ${item.user.last_name} ${item.string}`} />
+                </ListItem>
+                <Divider />
+            </>
+            )}
+        </React.Fragment>
+        );
+    })}
+    </List>
   );
 }
 
