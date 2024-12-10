@@ -52,7 +52,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
             setContextText(`Welcome ${first_name}`);
           }
         }
-      })
+      });
   });
 
   useEffect(() => {
@@ -69,7 +69,7 @@ function TopBar({ onToggleAdvancedFeatures, loggedInUser, onLogout }) {
   const handleLogOut = () => {
     onLogout();
     navigate("/");
-  }
+  };
 
   return (
     <AppBar className="topbar-appBar" position="absolute">

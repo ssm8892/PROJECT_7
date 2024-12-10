@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Button, TextField } from "@mui/material";
+import { Typography, Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 //import fetchModel from "../../lib/fetchModelData";
 import "./styles.css";
@@ -50,7 +50,7 @@ function UserPhotos({ userId, photoId, isAdvancedEnabled }) {
     console.log("HANDLE COMMENT SUBMIT IS TRIGGERED FOR PICTURE: ", photoID);
     
     try {
-      const response = await axios.post(`/commentsOfPhoto/${photoID}`, { comment: newComment });
+      axios.post(`/commentsOfPhoto/${photoID}`, { comment: newComment });
 
       setNewComment("");
       fetchPhotos();
@@ -101,7 +101,7 @@ function UserPhotos({ userId, photoId, isAdvancedEnabled }) {
             </Typography>
           )}
           {isLoggedIn && (
-            <>
+            
               <form>
                 <label>
                   Add Comment
@@ -114,7 +114,7 @@ function UserPhotos({ userId, photoId, isAdvancedEnabled }) {
                 </label>
                 <button type="submit" onClick={(e) => handleCommentSubmit(e, currentPhoto._id)}>Submit</button>
               </form>
-            </>
+            
           )}
         </div>
       ) : (
@@ -139,7 +139,7 @@ function UserPhotos({ userId, photoId, isAdvancedEnabled }) {
               </Typography>
             )}
             {isLoggedIn && (
-              <>
+              
                 <form>
                   <label>
                     Add Comment
@@ -152,7 +152,7 @@ function UserPhotos({ userId, photoId, isAdvancedEnabled }) {
                   </label>
                   <button type="submit" onClick={(e) => handleCommentSubmit(e, photo._id)}>Submit</button>
                 </form>
-              </>
+              
 
             )}
           </div>
