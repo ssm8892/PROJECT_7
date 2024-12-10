@@ -431,7 +431,7 @@ app.post('/admin/currentUser', (request, response) => {
 
 app.post("/commentsOfPhoto/:photo_id", async (request, response) => {
   const { photo_id } = request.params;
-  const { comment } = request.body;
+  const { comment, mentions } = request.body; // Extract mentions from the request body
 
   if (!comment) {
     return response.status(400).send("Comment cannot be empty");
@@ -443,20 +443,24 @@ app.post("/commentsOfPhoto/:photo_id", async (request, response) => {
       return response.status(404).send("Photo not found");
     }
 
+    // Push the comment with mentions into the photo's comments array
     photo.comments.push({
       comment,
       user_id: request.session.user._id,
       date_time: new Date(),
+      mentions: mentions || [], // Include mentions if provided, default to an empty array
     });
+
     await photo.save();
 
-    console.log("Comment Added");
+    console.log("Comment with mentions added:", { comment, mentions });
     return response.status(200).send("Comment added");
   } catch (err) {
     console.error("Error adding comment:", err);
     return response.status(500).json({ message: "Error adding comment" });
   }
 });
+
 
 
 app.post("/photos/new", upload.single("uploadedphoto"), async (req, res) => {
@@ -493,6 +497,88 @@ app.post("/photos/new", upload.single("uploadedphoto"), async (req, res) => {
     return res.status(500).send("Error uploading photo");
   }
 });
+
+
+/*
+app.get("/photosWithMentions/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  console.log("request id", userId);
+
+  try {
+    // Fetch user by identifier (could be username or ID)
+    const user = await User.findById(new mongoose.Types.ObjectId(userId)).select('-__v -first_name -last_name');
+
+
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+    console.log("USER FOUND: ", user);
+
+    const allPhotos = await Photo.find().populate("comments.user_id", "first_name last_name");
+    //console.log("PHOTOS:", allPhotos);
+
+    // Filter photos where mentions include the user's `id` or `username`
+    const photosWithMention = allPhotos.filter((photo) =>
+      photo.comments.some((comment) =>
+        comment.mentions &&
+        (comment.mentions.includes(user._id.toString()) || comment.mentions.includes(user.username))
+      )
+    );
+    console.log("photos:", photosWithMention);
+
+    if (photosWithMention.length === 0) {
+      return res.status(404).send("No photos found with mentions of this user.");
+    }
+
+    res.status(200).json(photosWithMention);
+  } catch (err) {
+    console.error("Error fetching photos with mentions:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+*/
+
+app.get("/photosWithMentions/:userId", async (req, res) => {
+  const { userId } = req.params; // Extract userId from the route parameter
+  //console.log("Request ID:", userId); // Debugging log
+
+  try {
+    const user = await User.findById(userId).select("first_name last_name _id");
+    if (!user) {
+      console.log("User not found for ID:", userId);
+      return res.status(404).send("User not found.");
+    }
+    //console.log("USER FOUND:", user);
+
+    const allPhotos = await Photo.find().populate("comments.user_id comments.mentions", "first_name last_name");
+    //console.log("ALL PHOTOS FETCHED:", allPhotos.length);
+
+    const photosWithMention = [];
+
+    allPhotos.forEach((photo) => {
+      // Check each comment in the photo
+      photo.comments.forEach((comment) => {
+        if (comment.mentions && comment.mentions.some((mentionId) => mentionId.toString() === user._id.toString())) {
+          photosWithMention.push(photo); // Add photo to result if match found
+        }
+      });
+    });
+
+    console.log(photosWithMention);
+
+    if (photosWithMention.length === 0) {
+      return res.status(404).send("No photos found with mentions of this user.");
+    }
+
+    res.status(200).json(photosWithMention);
+  } catch (err) {
+    console.error("Error fetching photos with mentions:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 
 
 
