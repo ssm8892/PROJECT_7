@@ -130,9 +130,7 @@ function UserComments({ isAdvancedEnabled }) {
           comments.map((comment) => (
             <ListItem
               key={comment._id}
-              onClick={() =>
-                isAdvancedEnabled && handleCommentClick(comment.photo_id)
-              }
+              onClick={() => isAdvancedEnabled && handleCommentClick(comment.photo_id)}
               button={isAdvancedEnabled} // Only make clickable if advanced features are enabled
             >
               {/* Display a thumbnail of the associated photo */}

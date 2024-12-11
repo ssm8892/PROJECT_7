@@ -705,11 +705,9 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
     const allPhotos = await Photo.find().populate("comments.user_id comments.mentions", "first_name last_name");
 
     // Filter photos where the user is mentioned
-    const photosWithMention = allPhotos.filter((photo) =>
-      photo.comments.some((comment) =>
-        comment.mentions?.some((mentionId) => mentionId.toString() === user._id.toString())
-      )
-    );
+    const photosWithMention = allPhotos.filter((photo) => {
+      return photo.comments.some((comment) => comment.mentions?.some((mentionId) => mentionId.toString() === user._id.toString()));
+   });
     console.log("PHOTO_MENTIONS: ", photosWithMention);
 
     // Transform the photos to include owner details

@@ -457,10 +457,11 @@ function UserPhotos({ userId, photoId, isAdvancedEnabled }) {
 
     const mentions = [];
     const regex = /@\[(.+?)\]\((.+?)\)/g;
-    let match;
+    let match = regex.exec(newComment);
 
-    while ((match = regex.exec(newComment)) !== null) {
+    while (match !== null) {
       mentions.push(match[2]); // Extract the user ID
+      match = regex.exec(newComment);
     }
 
     try {
@@ -493,8 +494,7 @@ function UserPhotos({ userId, photoId, isAdvancedEnabled }) {
     });
   };
 
-  if (!photos || photos.length === 0)
-    return <Typography variant="body1">No photos found</Typography>;
+  if (!photos || photos.length === 0) { return <Typography variant="body1">No photos found</Typography>;}
 
   const currentPhoto = photos[currentPhotoIndex];
 

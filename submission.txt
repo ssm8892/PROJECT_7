@@ -8,20 +8,22 @@ like to be graded on. For each story include the following information:
 Story number and name:  5 - Activity Feed
 Story points:   4
 Brief description to see the story in action:   
-Push the button labeled Activies on the toolbar to view the 10 most recent
-activities of the current user.
+Push the button labeled Activies on the toolbar to view the 5 most recent
+activities in reverse chronological order. Information is obtained on initial
+component load, then polled for changes every 10 seconds.
 
 Story number and name:  1 - Extend user profile detail with usage
 Story points:   3
 Brief description to see the story in action: 
 Click on any user to look at their User Detail page and view their most recent
-photo and the photo with the most comments on it.   
+photo and the photo with the most comments on it. Both update upon page reload.
 
 Story number and name:  8 - Sidebar list marks users with new activity
 Story points:   3
 Brief description to see the story in action:   
-Once you log in, sidebar should highlight users with new activity. Perform some action,
-and then log in as another user to view the original activity be highlighted in the sidebar. 
+Once you log in, sidebar shows the last activities of each user. See your own activity change automatically,
+at the top in blue, or log in on the private browser window to see other users' changes reflected in both sessions. 
+Information is obtained on initial component load, then polled for changes every 10 seconds.
 
 Story number and name:  2 - Mentions in comments
 Story points:   6
@@ -33,9 +35,14 @@ and their User Detail page will display all the photos under which they are ment
 Total Story Points: 16
 
 Marketing Video URL (ensure permissions are set to public viewing):
+Included file in folder
 
 Is it OK if we post your Marketing Video URL on the class discussion forum?
-[Yes/No]
+[Yes]
 
 Any special instructions for grading (it should be easy for someone to run your
 app from a new machine):
+The instructions say not to include /compiled and the command list doesn't include
+npm run build, so I'm not quite sure how the react is supposed to be compiled... but
+P7 didn't have it either and it turned out fine, so this is just making a note that the
+react components have to be compiled somehow.

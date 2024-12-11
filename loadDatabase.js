@@ -25,6 +25,7 @@ const models = require("./modelData/photoApp.js").models;
 // Load the Mongoose schema for Use and Photo
 const User = require("./schema/user.js");
 const Photo = require("./schema/photo.js");
+const Activity = require("./schema/activity.js");
 const SchemaInfo = require("./schema/schemaInfo.js");
 
 const versionString = "1.0";
@@ -33,6 +34,7 @@ const versionString = "1.0";
 const removePromises = [
   User.deleteMany({}),
   Photo.deleteMany({}),
+  Activity.deleteMany({}),
   SchemaInfo.deleteMany({}),
 ];
 
