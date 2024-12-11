@@ -303,6 +303,73 @@ app.get("/photosOfUser/:id", async function (request, response) {
 });
 
 /**
+ * URL /photosOfUser/:id/recent - Returns the most recent photo for a user.
+ */
+app.get("/photosOfUser/:id/recent", async function (request, response) {
+    const userId = request.params.id;
+    if (!request.session.user) {
+      return response.status(401).send('Unauthorized Access');
+    }
+  
+    // Check if userId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return response.status(400).send("Invalid user ID format");
+    }
+  
+    try {
+      const photo = await Photo.find({ user_id: new mongoose.Types.ObjectId(userId) })
+        .select('_id file_name date_time').sort('-date_time').limit(1);
+  
+      if (!photo) {
+        console.log("Photos for user with _id:" + userId + " not found.");
+        return response.status(404).send("User has no photos");
+      }
+  
+      return response.status(200).json(photo);
+    } catch (err) {
+      console.error("Error fetching photos:", err);
+      return response.status(400).json({ message: "Error fetching photos" });
+    }
+  });
+
+  app.get("/photosOfUser/:id/mostLiked", async function (request, response) {
+    const userId = request.params.id;
+    //if (!request.session.user) {
+    //  return response.status(401).send('Unauthorized Access');
+    //}
+  
+    // Check if userId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return response.status(400).send("Invalid user ID format");
+    }
+  
+    try {
+      const photo = await Photo.aggregate(
+        [
+            { $match: {user_id: new mongoose.Types.ObjectId(userId)}},
+            { $project: {
+                _id: 1,
+                file_name: 1,
+                num_comments: {$size: '$comments'}
+            }},
+            { $sort: {num_comments: -1}},
+            {$limit: 1}
+        ]
+      );
+  
+      if (!photo) {
+        console.log("Photos for user with _id:" + userId + " not found.");
+        return response.status(404).send("User has no photos");
+      }
+  
+      return response.status(200).json(photo);
+    } catch (err) {
+      console.error("Error fetching photos:", err);
+      return response.status(400).json({ message: "Error fetching photos" });
+    }
+  });
+
+/**
  * URL /user/counts/:userId - Returns the count of photos and comments for a specific user.
  */
 app.get("/user/counts/:userId", async function (request, response) {
@@ -601,16 +668,16 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
       });
     });
 
-    console.log(photosWithMention);
+    //console.log(photosWithMention);
 
     if (photosWithMention.length === 0) {
       return res.status(404).send("No photos found with mentions of this user.");
     }
 
-    res.status(200).json(photosWithMention);
+    return res.status(200).json(photosWithMention);
   } catch (err) {
     console.error("Error fetching photos with mentions:", err);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -683,16 +750,16 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
       });
     });
 
-    console.log(photosWithMention);
+    //console.log(photosWithMention);
 
     if (photosWithMention.length === 0) {
       return res.status(404).send("No photos found with mentions of this user.");
     }
 
-    res.status(200).json(photosWithMention);
+    return res.status(200).json(photosWithMention);
   } catch (err) {
     console.error("Error fetching photos with mentions:", err);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
