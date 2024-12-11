@@ -642,6 +642,7 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
 });
 */
 
+/*
 app.get("/photosWithMentions/:userId", async (req, res) => {
   const { userId } = req.params; // Extract userId from the route parameter
   //console.log("Request ID:", userId); // Debugging log
@@ -668,7 +669,16 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
       });
     });
 
-    //console.log(photosWithMention);
+    photosWithMention.forEach(async (photo) => {
+      const photo_owner = await User.findById(photo.user_id).populate("first_name last_name");
+      console.log(photo_owner);
+      const photo_final = {_id:photo._id, first_name:photo_owner.first_name, last_name:photo_owner.last_name, user_id:photo.user_id, file_name: photo.file_name};
+      console.log("PHOTO_FINAL: ", photo_final);
+      photosWithMention.pop(photo);
+      photosWithMention.push(photo_final);
+    });
+
+    console.log(photosWithMention);
 
     if (photosWithMention.length === 0) {
       return res.status(404).send("No photos found with mentions of this user.");
@@ -680,6 +690,55 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+*/
+
+app.get("/photosWithMentions/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).select("first_name last_name _id");
+    if (!user) {
+      console.log("User not found for ID:", userId);
+      return res.status(404).send("User not found.");
+    }
+
+    const allPhotos = await Photo.find().populate("comments.user_id comments.mentions", "first_name last_name");
+
+    // Filter photos where the user is mentioned
+    const photosWithMention = allPhotos.filter((photo) =>
+      photo.comments.some((comment) =>
+        comment.mentions?.some((mentionId) => mentionId.toString() === user._id.toString())
+      )
+    );
+    console.log("PHOTO_MENTIONS: ", photosWithMention);
+
+    // Transform the photos to include owner details
+    const transformedPhotos = await Promise.all(
+      photosWithMention.map(async (photo) => {
+        const photoOwner = await User.findById(photo.user_id).select("first_name last_name");
+        return {
+          _id: photo._id,
+          first_name: photoOwner.first_name,
+          last_name: photoOwner.last_name,
+          user_id: photo.user_id,
+          file_name: photo.file_name,
+        };
+      })
+    );
+
+    console.log("PHOTO_TRANSFORMED: ", transformedPhotos);
+
+    if (transformedPhotos.length === 0) {
+      return res.status(404).send("No photos found with mentions of this user.");
+    }
+
+    return res.status(200).json(transformedPhotos);
+  } catch (err) {
+    console.error("Error fetching photos with mentions:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 
 
@@ -724,6 +783,7 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
 });
 */
 
+/*
 app.get("/photosWithMentions/:userId", async (req, res) => {
   const { userId } = req.params; // Extract userId from the route parameter
   //console.log("Request ID:", userId); // Debugging log
@@ -737,7 +797,7 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
     //console.log("USER FOUND:", user);
 
     const allPhotos = await Photo.find().populate("comments.user_id comments.mentions", "first_name last_name");
-    //console.log("ALL PHOTOS FETCHED:", allPhotos.length);
+    console.log("ALL PHOTOS FETCHED:", allPhotos.length);
 
     const photosWithMention = [];
 
@@ -750,8 +810,6 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
       });
     });
 
-    //console.log(photosWithMention);
-
     if (photosWithMention.length === 0) {
       return res.status(404).send("No photos found with mentions of this user.");
     }
@@ -762,6 +820,7 @@ app.get("/photosWithMentions/:userId", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+*/
 
 
 

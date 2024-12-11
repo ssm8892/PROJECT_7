@@ -169,7 +169,7 @@ function UserDetail({ userId }) {
                             <Typography variant="body2" color="textSecondary">
                             <strong>Photo Owner:</strong>{" "}
                             <Link to={`/users/${photo.user_id}`}>
-                                PHOTO_OWNER
+                                {photo.first_name} {photo.last_name}
                             </Link>
                             </Typography>
                         </CardContent>
